@@ -5,11 +5,12 @@
 		<GmapMap
 			map-type-id="terrain"
 			:center="{lat: coordinates.lat, lng: coordinates.lng}"
-			:zoom='3'
+			:zoom='2'
 			style="width: 70vw; height: 80vh; margin: auto;"
 			ref="mapRef"
 		>
-		<gmap-marker :position="{lat: coordinates.lat, lng: coordinates.lng}" :clickable="true" 
+		<gmap-marker :key="index" v-for="(fire, index) in wildFires" :position="{lat: fire.coordinates[1], lng: fire.coordinates[0]}"
+		:clickable="true"
 		:icon="markerOptions"/>
 		</GmapMap>
 	</div>
@@ -38,7 +39,14 @@ export default {
 		events() {
 			this.axios.get('https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/8')
 			.then(res => {
-			console.log(res.data.events)
+			let events = res.data.events
+			console.log(events)
+			for(let event of events) {
+				let newObj = {}
+				newObj['date'] = event.geometries[0].date
+				newObj['coordinates'] = event.geometries[0].coordinates
+				this.wildFires.push(newObj)
+			}
 			})
 			.catch(err => {
 				console.log(err)
@@ -54,8 +62,10 @@ export default {
 		.catch(err => {
 			alert(err)
 		})
-		this.events()
 	},
+	beforeMount() {
+		this.events()
+	}
 }
 </script>
 
