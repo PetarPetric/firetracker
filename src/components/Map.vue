@@ -11,13 +11,15 @@
 		>
 		<gmap-marker :key="index" v-for="(fire, index) in wildFires" :position="{lat: fire.coordinates[1], lng: fire.coordinates[0]}"
 		:clickable="true"
-		:icon="markerOptions"/>
+		:icon="fireMarker"/>
+		<gmap-marker :position="{lat: coordinates.lat, lng: coordinates.lng}" :icon="manMarker" />
 		</GmapMap>
 	</div>
 </template>
 
 <script>
 const mapMarker = require('@/assets/fireemoji.png');
+const manMarker = require('@/assets/manemoji.png');
 
 export default {
 	data() {
@@ -27,10 +29,15 @@ export default {
 				lat: 0,
 				lng: 0
 			},
-			markerOptions: {
+			fireMarker: {
 				url: mapMarker,
 				size: {width: 30, height: 45, f: 'px', b: 'px'},
 				scaledSize: {width: 30, height: 45, f: 'px', b: 'px'}
+			},
+			manMarker: {
+				url: manMarker,
+				size: {width: 20, height: 20, f: 'px', b: 'px'},
+				scaledSize: {width: 20, height: 20, f: 'px', b: 'px'}
 			},
 			wildFires: [],
 		}
@@ -62,10 +69,8 @@ export default {
 		.catch(err => {
 			alert(err)
 		})
-	},
-	beforeMount() {
 		this.events()
-	}
+	},
 }
 </script>
 
