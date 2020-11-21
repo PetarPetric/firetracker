@@ -1,5 +1,6 @@
 <template>
-	<div>
+	<div class="main">
+		<h3>🔥 Wildfire Tracker using NASA OPEN API</h3>
 	</div>
 </template>
 
@@ -9,6 +10,15 @@ export default {
 }
 </script>
 
-<style>
+<style scoped> 
+
+.main {
+	display: flex;
+	background-color: #B32E1F;
+	color: white;
+	height: 5vh;
+	align-items: center;
+	justify-content: center;
+}
 
 </style>

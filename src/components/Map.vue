@@ -1,63 +1,54 @@
 <template>
 	<div class="main">
-		<h1> Your GeoLocation</h1>
-		<p>{{coordinates.lat}} Latitude, {{coordinates.lng}} Longtitude</p>
+		<Header />
+		<Loader v-if="loading" />
 		<GmapMap
 			map-type-id="terrain"
 			:center="{lat: coordinates.lat, lng: coordinates.lng}"
-			:zoom='2'
-			style="width: 70vw; height: 80vh; margin: auto;"
+			:zoom='3'
+			style="width: 100vw; height: 85vh; margin: auto;"
 			ref="mapRef"
 		>
-		<gmap-marker :key="index" v-for="(fire, index) in wildFires" :position="{lat: fire.coordinates[1], lng: fire.coordinates[0]}"
-		:clickable="true"
-		:icon="fireMarker"/>
+		<Fire @turnOnLoader="turnLoader" :loading="loading"/>
 		<gmap-marker :position="{lat: coordinates.lat, lng: coordinates.lng}" :icon="manMarker" />
 		</GmapMap>
+		<div class="footer">
+			<h3> Your GeoLocation</h3>
+			<p>{{coordinates.lat}} Latitude, {{coordinates.lng}} Longtitude</p>
+		</div>
 	</div>
 </template>
 
 <script>
-const mapMarker = require('@/assets/fireemoji.png');
+import Loader from '@/components/Loader.vue';
+import Header from '@/components/Header.vue';
+import Fire from '@/components/Fire.vue';
+
 const manMarker = require('@/assets/manemoji.png');
 
 export default {
+	components: {
+		Loader,
+		Header,
+		Fire
+	},
 	data() {
 		return {
+			loading: false,
 			coordinates: {
-				map: null,
 				lat: 0,
-				lng: 0
-			},
-			fireMarker: {
-				url: mapMarker,
-				size: {width: 30, height: 45, f: 'px', b: 'px'},
-				scaledSize: {width: 30, height: 45, f: 'px', b: 'px'}
+				lng: 0,
 			},
 			manMarker: {
 				url: manMarker,
 				size: {width: 20, height: 20, f: 'px', b: 'px'},
 				scaledSize: {width: 20, height: 20, f: 'px', b: 'px'}
 			},
-			wildFires: [],
 		}
 	},
 	methods: {
-		events() {
-			this.axios.get('https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/8')
-			.then(res => {
-			let events = res.data.events
-			console.log(events)
-			for(let event of events) {
-				let newObj = {}
-				newObj['date'] = event.geometries[0].date
-				newObj['coordinates'] = event.geometries[0].coordinates
-				this.wildFires.push(newObj)
-			}
-			})
-			.catch(err => {
-				console.log(err)
-			})
+		turnLoader() {
+			this.loading = true;
 		}
 	},
 	created() {
@@ -65,11 +56,12 @@ export default {
 		.then(coordinates => {
 			console.log(coordinates)
 			this.coordinates = coordinates
+			this.loading = false;
 		})
 		.catch(err => {
+			this.loading = false;
 			alert(err)
 		})
-		this.events()
 	},
 }
 </script>
@@ -77,5 +69,19 @@ export default {
 <style scoped>
 .main {
 	text-align: center;
+}
+
+.footer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: #B32E1F;
+	color: white;
+	height: 10vh;
+}
+
+.footer > h3 {
+	padding-bottom: 15px;
 }
 </style>
